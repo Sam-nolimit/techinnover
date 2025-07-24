@@ -1,16 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from "react";
+// import Layout from "@/components/Layout";
+import SpendCarousel from "@/components/SpendCarousel";
+import Layout from "../../constants/Layout"; // Adjust the import path as necessary
+import UserName from "@/components/userName";
+import { Text } from "react-native";
 
 const HomeScreen = () => {
   return (
-    <View>
-      <Text>Home</Text>
-    </View>
-  )
-}
+    <>
+    <Layout>
+      <UserName />
+      
+      <SpendCarousel />
+    <Text> Quick Links</Text>
+    </Layout>
+    </>
+  );
+};
 
 export default HomeScreen;
-
-const styles = StyleSheet.create({
-    
-})
