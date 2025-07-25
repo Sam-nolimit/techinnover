@@ -1,20 +1,20 @@
 import Layout from "@/constants/Layout";
 import React, { useState } from "react";
 import {
+  Dimensions,
+  ScrollView,
   StyleSheet,
   Text,
-  View,
-  Dimensions,
   TouchableOpacity,
-  ScrollView,
+  View,
 } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
 
 // SVG imports (adjust paths based on your project)
-import FoodIcon from "@/assets/images/food.svg";
-import HouseIcon from "@/assets/images/housing.svg";
 import EntertainmentIcon from "@/assets/images/entertainment.svg";
 import FamilyIcon from "@/assets/images/family.svg";
+import FoodIcon from "@/assets/images/food.svg";
+import HouseIcon from "@/assets/images/housing.svg";
 // import FoodIcon from "@/assets/images/food.svg";
 import HealthIcon from "@/assets/images/health.svg";
 // import HouseIcon from "@/assets/images/housing.svg";
@@ -24,6 +24,7 @@ const { width } = Dimensions.get("window");
 
 const AnalyticsScreen = () => {
   const [selectedFilter, setSelectedFilter] = useState("All");
+  const [selectedSlice, setSelectedSlice] = useState(null);
 
   const chartData = [
     { value: 50000, label: "Food & Drinks", color: "#F04438" },
@@ -32,7 +33,10 @@ const AnalyticsScreen = () => {
     { value: 10000, label: "Travel & Vacation", color: "#800080" },
     { value: 15000, label: "Family", color: "#039855" },
     { value: 10000, label: "Transportation", color: "#005EE8" },
-  ];
+  ].map((item) => ({
+    ...item,
+    onPress: () => setSelectedSlice(item),
+  }));
 
   const categoriesData = [
     {
@@ -123,7 +127,10 @@ const AnalyticsScreen = () => {
 
   return (
     <Layout>
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>Expense Report</Text>
           <TouchableOpacity style={styles.dropdown}>
@@ -178,7 +185,9 @@ const AnalyticsScreen = () => {
           <View style={styles.legendColumn}>
             {chartData.slice(0, 3).map((item, index) => (
               <View key={index} style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: item.color }]} />
+                <View
+                  style={[styles.legendDot, { backgroundColor: item.color }]}
+                />
                 <Text style={styles.legendLabel}>{item.label}</Text>
               </View>
             ))}
@@ -186,7 +195,9 @@ const AnalyticsScreen = () => {
           <View style={styles.legendColumn}>
             {chartData.slice(3).map((item, index) => (
               <View key={index + 3} style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: item.color }]} />
+                <View
+                  style={[styles.legendDot, { backgroundColor: item.color }]}
+                />
                 <Text style={styles.legendLabel}>{item.label}</Text>
               </View>
             ))}
@@ -218,7 +229,9 @@ const AnalyticsScreen = () => {
                   {cat.icon}
                 </View>
                 <Text style={styles.categoryTitle}>{cat.title}</Text>
-                <Text style={styles.categoryAmount}>₦ {cat.amount.toLocaleString()}</Text>
+                <Text style={styles.categoryAmount}>
+                  ₦ {cat.amount.toLocaleString()}
+                </Text>
               </View>
             ))}
           </ScrollView>
@@ -239,7 +252,9 @@ const AnalyticsScreen = () => {
                 />
                 <View>
                   <Text style={styles.transactionTitleText}>{item.title}</Text>
-                  <Text style={styles.transactionCategory}>{item.category}</Text>
+                  <Text style={styles.transactionCategory}>
+                    {item.category}
+                  </Text>
                 </View>
               </View>
               <View style={styles.transactionRight}>

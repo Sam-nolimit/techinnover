@@ -12,9 +12,8 @@ import ShopIcon from "@/assets/images/shopping.svg";
 import TravelIcon from "@/assets/images/travel.svg";
 import { useNavigation } from "@react-navigation/native";
 import { router } from "expo-router";
-import DatePicker from 'react-native-date-picker';
-import * as DocumentPicker from 'expo-document-picker';
-import React, { useRef, useState } from "react";
+import DatePicker from 'react-native-date-picker'
+import React, { useRef } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -24,7 +23,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Image,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Modalize } from "react-native-modalize";
@@ -75,10 +73,8 @@ const categories = [
 export default function AddExpenseScreen() {
   const [amount, setAmount] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState(null);
-  const [date, setDate] = React.useState(new Date());
+  const [date, setDate] = React.useState("");
   const [note, setNote] = React.useState("");
-  const [file, setFile] = React.useState(null);
-  const [showDatePicker, setShowDatePicker] = React.useState(false);
   const modalizeRef = useRef(null);
   const navigation = useNavigation();
 
@@ -96,17 +92,7 @@ export default function AddExpenseScreen() {
   };
 
   const handleContinue = () => {
-    console.log({ 
-      amount, 
-      selectedCategory, 
-      date, 
-      note,
-      file: file ? {
-        name: file.name,
-        type: file.mimeType,
-        size: file.size,
-      } : null
-    });
+    console.log({ amount, selectedCategory, date, note });
   };
 
   const onModalOpened = () => {
@@ -129,29 +115,6 @@ export default function AddExpenseScreen() {
         }),
       },
     });
-  };
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
-
-  const handleFileUpload = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: ['image/*', 'application/pdf'],
-        copyToCacheDirectory: false,
-      });
-
-      if (result.type === 'success') {
-        setFile(result);
-      }
-    } catch (err) {
-      console.log('File upload error:', err);
-    }
   };
 
   return (
@@ -208,57 +171,29 @@ export default function AddExpenseScreen() {
 
             {/* Date */}
             <Text style={styles.label}>Expense date</Text>
-            <TouchableOpacity 
-              style={[styles.inputBox, styles.row]}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text style={styles.flex}>
-                {formatDate(date)}
-              </Text>
+            <View style={[styles.inputBox, styles.row]}>
+              <TextInput
+                style={styles.flex}
+                placeholder="DD/MM/YYYY"
+                placeholderTextColor="#777"
+                value={date}
+                onChangeText={setDate}
+              />
               <CalendarIcon width={20} height={20} color="#EC4899" />
-            </TouchableOpacity>
-            <DatePicker
-              modal
-              open={showDatePicker}
-              date={date}
-              mode="date"
-              onConfirm={(selectedDate) => {
-                setShowDatePicker(false);
-                setDate(selectedDate);
-              }}
-              onCancel={() => {
-                setShowDatePicker(false);
-              }}
-            />
+            </View>
 
             {/* Upload */}
-            <TouchableOpacity 
-              style={styles.uploadBox}
-              onPress={handleFileUpload}
-            >
+            <TouchableOpacity style={styles.uploadBox}>
               <View style={styles.uploadRow}>
                 <UploadIcon width={24} height={24} color="#666" />
                 <View style={styles.uploadTextContainer}>
-                  {file ? (
-                    <>
-                      <Text style={styles.uploadText}>
-                        <Text style={styles.uploadBlue}>{file.name}</Text>
-                      </Text>
-                      <Text style={styles.uploadSubtext}>
-                        {file.size} bytes
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <Text style={styles.uploadText}>
-                        <Text style={styles.uploadBlue}>Click to upload</Text>
-                        <Text style={styles.uploadGray}> or drag and drop</Text>
-                      </Text>
-                      <Text style={styles.uploadSubtext}>
-                        SVG, PNG, JPG or GIF (max. 800x400px)
-                      </Text>
-                    </>
-                  )}
+                  <Text style={styles.uploadText}>
+                    <Text style={styles.uploadBlue}>Click to upload</Text>
+                    <Text style={styles.uploadGray}> or drag and drop</Text>
+                  </Text>
+                  <Text style={styles.uploadSubtext}>
+                    SVG, PNG, JPG or GIF (max. 800x400px)
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -279,6 +214,9 @@ export default function AddExpenseScreen() {
 
             {/* Buttons */}
             <View style={styles.buttonRow}>
+              {/* <TouchableOpacity style={styles.cancelBtn}>
+                <Text style={styles.cancelTxt}>Cancel</Text>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 style={styles.cancelBtn}
                 onPress={() => router.back()}
