@@ -1,12 +1,11 @@
 import { MotiView } from "moti";
-import React, { useState } from "react";
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 
-// Get device width
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-const numberToNice = [...Array(10).keys()]; // [0–9]
-const _stagger = 50; // Stagger animation effect
+const numberToNice = [...Array(10).keys()]; 
+const _stagger = 50; 
 
 interface SpendCardProps {
   dateLabel: string;
@@ -29,7 +28,6 @@ interface TextProps {
   onTextLayout?: (event: any) => void;
 }
 
-// Format the amount with comma and two decimal places
 const formatAmount = (amount: string | number) => {
   const numeric =
     typeof amount === "string" ? parseFloat(amount.replace(/,/g, "")) : amount;
@@ -53,7 +51,6 @@ function Tick({
         {
           fontSize: fontSize || 28,
           color: "#FFFFFF",
-          fontFamily: "latoRegular",
           textAlign: "center",
         },
         style,
@@ -122,7 +119,6 @@ function Ticker({
       {splitValue.map((char, index) => {
         const digit = parseInt(char, 10);
         if (isNaN(digit)) {
-          // Static characters like commas or decimal points
           return (
             <Text
               style={[styles.staticChar, { fontSize }]}
@@ -154,6 +150,18 @@ const SpendCard: React.FC<SpendCardProps> = ({
 }) => {
   const formattedAmount = formatAmount(amount);
 
+  // Render icon - handle both React components and image sources
+  const renderIcon = () => {
+    if (!icon) return null;
+    
+    // If it's a React component, render it directly
+    if (React.isValidElement(icon)) {
+      return <View style={styles.iconContainer}>{icon}</View>;
+    }
+    
+    return null;
+  };
+
   return (
     <View style={styles.card}>
       <Text style={styles.dateLabel}>{dateLabel}</Text>
@@ -163,14 +171,12 @@ const SpendCard: React.FC<SpendCardProps> = ({
       </View>
 
       <View style={styles.differenceRow}>
-        {icon && <Image source={icon} style={styles.icon} />}
+        {renderIcon()}
         <Text style={styles.differenceText}>{differenceText}</Text>
       </View>
     </View>
   );
 };
-
-export default SpendCard;
 
 const styles = StyleSheet.create({
   card: {
@@ -202,12 +208,10 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     marginRight: 2,
-    fontFamily: "latoRegular",
   },
   staticChar: {
     color: "#FFFFFF",
     fontWeight: "bold",
-    fontFamily: "latoRegular",
   },
   tickerContainer: {
     overflow: "hidden",
@@ -219,19 +223,22 @@ const styles = StyleSheet.create({
     fontVariant: ["tabular-nums"],
     color: "#ffffff",
     textAlign: "center",
-    fontFamily: "latoRegular",
   },
   differenceRow: {
     flexDirection: "row",
     alignItems: "center",
   },
-  icon: {
+  iconContainer: {
     width: 18,
     height: 18,
     marginRight: 6,
+    alignItems: "center",
+    justifyContent: "center",
   },
   differenceText: {
     color: "#B3B7C2",
     fontSize: 13,
   },
 });
+
+export default SpendCard;

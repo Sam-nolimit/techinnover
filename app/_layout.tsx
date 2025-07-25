@@ -7,8 +7,32 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
+import React from 'react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from '../store/store';
+import { View, Text, ActivityIndicator } from 'react-native';
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+
+const LoadingScreen = () => (
+  <View style={{ 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: '#fff' 
+  }}>
+    <ActivityIndicator size="large" color="#2563EB" />
+    {/* <Text style={{ 
+      marginTop: 16, 
+      fontSize: 16, 
+      color: '#666',
+      fontFamily: 'LatoRegular'
+    }}>
+      Loading...
+    </Text> */}
+  </View>
+);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -22,17 +46,20 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
+    return <LoadingScreen />;
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Provider store={store}>
+      <PersistGate loading={<LoadingScreen />} persistor={persistor}>
+        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </PersistGate>
+    </Provider>
   );
 }

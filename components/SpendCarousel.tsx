@@ -6,11 +6,11 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from "react-native";
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 import SpendCard from "./spendCard";
+import TrendDownIcon from "../assets/images/trend-down.svg";
 
-const formatAmount = (amount: number) => amount.toLocaleString();
-
-// Helper function to format dates
 const formatDate = (date: Date) => {
   const options: Intl.DateTimeFormatOptions = { 
     weekday: 'short', 
@@ -20,7 +20,6 @@ const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', options);
 };
 
-// Helper function to get previous dates
 const getPreviousDate = (daysAgo: number) => {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
@@ -28,34 +27,43 @@ const getPreviousDate = (daysAgo: number) => {
 };
 
 const SpendCarousel = () => {
+  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Calculate daily spending from Redux data
+  const getDailySpending = (date: Date) => {
+    const dateString = date.toISOString().split('T')[0];
+    return expenses
+      .filter(expense => expense.date === dateString)
+      .reduce((total, expense) => total + expense.amount, 0);
+  };
+
   const [data, setData] = useState([
     {
       id: "1",
-      date: new Date(), // Today
-      amount: 23946,
+      date: new Date(), 
+      amount: getDailySpending(new Date()),
       differenceText: "47% below than yesterday",
     },
     {
       id: "2",
-      date: getPreviousDate(1), // Yesterday
-      amount: 22000,
+      date: getPreviousDate(1), 
+      amount: getDailySpending(getPreviousDate(1)),
       differenceText: "12% higher than previous",
     },
     {
       id: "3",
-      date: getPreviousDate(2), // 2 days ago
-      amount: 18500,
+      date: getPreviousDate(2),
+      amount: getDailySpending(getPreviousDate(2)),
       differenceText: "5% below than previous",
     },
     {
       id: "4",
-      date: getPreviousDate(3), // 3 days ago
-      amount: 18500,
+      date: getPreviousDate(3),
+      amount: getDailySpending(getPreviousDate(3)),
       differenceText: "5% below than previous",
     },
   ]);
-
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(
@@ -65,22 +73,15 @@ const SpendCarousel = () => {
     setCurrentIndex(index);
   };
 
+  // Update data when expenses change
   useEffect(() => {
-    const interval = setInterval(() => {
-      setData((prevData) =>
-        prevData.map((item) => {
-          const randomIncrease = Math.floor(Math.random() * 10000) + 100;
-          const newAmount = item.amount + randomIncrease;
-          return {
-            ...item,
-            amount: newAmount,
-          };
-        })
-      );
-    }, 100000);
-
-    return () => clearInterval(interval);
-  }, []);
+    setData(prevData => 
+      prevData.map(item => ({
+        ...item,
+        amount: getDailySpending(item.date)
+      }))
+    );
+  }, [expenses]);
 
   return (
     <View style={styles.container}>
@@ -100,8 +101,9 @@ const SpendCarousel = () => {
                   ? `Yesterday's spend (${formatDate(item.date)})` 
                   : formatDate(item.date)
             }
-            amount={formatAmount(item.amount)}
+            amount={item.amount.toLocaleString()}
             differenceText={item.differenceText}
+            // icon={<TrendDownIcon width={18} height={18} />}
           />
         )}
       />
@@ -116,8 +118,6 @@ const SpendCarousel = () => {
     </View>
   );
 };
-
-export default SpendCarousel;
 
 const styles = StyleSheet.create({
   container: {
@@ -143,3 +143,5 @@ const styles = StyleSheet.create({
     zIndex: 4,
   },
 });
+
+export default SpendCarousel;

@@ -1,19 +1,4 @@
-import CalendarIcon from "@/assets/images/calendar.svg";
-import {
-  default as CarIcon,
-  default as UploadIcon,
-} from "@/assets/images/camera.svg";
-import EntertainmentIcon from "@/assets/images/entertainment.svg";
-import FamilyIcon from "@/assets/images/family.svg";
-import FoodIcon from "@/assets/images/food.svg";
-import HealthIcon from "@/assets/images/health.svg";
-import HouseIcon from "@/assets/images/housing.svg";
-import ShopIcon from "@/assets/images/shopping.svg";
-import TravelIcon from "@/assets/images/travel.svg";
-import { useNavigation } from "@react-navigation/native";
-import { router } from "expo-router";
-import DatePicker from 'react-native-date-picker'
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -23,60 +8,55 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
+  Modal,
+  Pressable,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Modalize } from "react-native-modalize";
+import { router } from "expo-router";
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+import { addExpense, setSelectedCategory } from '../../store/expenseSlice';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
 
-const categories = [
-  {
-    key: "Food & Drinks",
-    icon: <FoodIcon width={24} height={24} />,
-    color: "#F04438",
-  },
-  {
-    key: "Housing",
-    icon: <HouseIcon width={24} height={24} />,
-    color: "#FACC15",
-  },
-  {
-    key: "Shopping",
-    icon: <ShopIcon width={24} height={24} />,
-    color: "#F97316",
-  },
-  {
-    key: "Family",
-    icon: <FamilyIcon width={24} height={24} />,
-    color: "#039855",
-  },
-  {
-    key: "Transportation",
-    icon: <CarIcon width={24} height={24} />,
-    color: "#005EE8",
-  },
-  {
-    key: "Travel/Vacation",
-    icon: <TravelIcon width={24} height={24} />,
-    color: "#800080",
-  },
-  {
-    key: "Entertainment",
-    icon: <EntertainmentIcon width={24} height={24} />,
-    color: "#1F2937",
-  },
-  {
-    key: "Health",
-    icon: <HealthIcon width={24} height={24} />,
-    color: "#EF4444",
-  },
-];
+import CalendarIcon from "@/assets/images/calendar.svg";
+import UploadIcon from "@/assets/images/camera.svg";
+import EntertainmentIcon from "@/assets/images/entertainment.svg";
+import FamilyIcon from "@/assets/images/family.svg";
+import FoodIcon from "@/assets/images/food.svg";
+import HealthIcon from "@/assets/images/health.svg";
+import HouseIcon from "@/assets/images/housing.svg";
+import ShopIcon from "@/assets/images/shopping.svg";
+import TravelIcon from "@/assets/images/travel.svg";
+import CarIcon from "@/assets/images/car.svg";
+
+const getIconForCategory = (categoryKey: string) => {
+  const iconMap: { [key: string]: JSX.Element } = {
+    "Food & Drinks": <FoodIcon width={24} height={24} />,
+    "Housing": <HouseIcon width={24} height={24} />,
+    "Shopping": <ShopIcon width={24} height={24} />,
+    "Family": <FamilyIcon width={24} height={24} />,
+    "Transportation": <CarIcon width={24} height={24} />,
+    "Travel/Vacation": <TravelIcon width={24} height={24} />,
+    "Entertainment": <EntertainmentIcon width={24} height={24} />,
+    "Health": <HealthIcon width={24} height={24} />,
+  };
+  return iconMap[categoryKey] || <HouseIcon width={24} height={24} />;
+};
 
 export default function AddExpenseScreen() {
-  const [amount, setAmount] = React.useState("");
-  const [selectedCategory, setSelectedCategory] = React.useState(null);
-  const [date, setDate] = React.useState("");
-  const [note, setNote] = React.useState("");
-  const modalizeRef = useRef(null);
-  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { categories, selectedCategory } = useSelector((state: RootState) => state.expenses);
+  
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState(moment().format('DD/MM/YYYY'));
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [note, setNote] = useState("");
+  const [title, setTitle] = useState("");
+  const modalizeRef = useRef<Modalize>(null);
 
   const openCategoryPicker = () => {
     modalizeRef.current?.open();
@@ -86,35 +66,49 @@ export default function AddExpenseScreen() {
     modalizeRef.current?.close();
   };
 
-  const handleCategorySelect = (cat) => {
-    setSelectedCategory(cat);
+  const handleCategorySelect = (category: typeof categories[0]) => {
+    dispatch(setSelectedCategory(category));
     closeCategoryPicker();
   };
 
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (selectedDate) {
+      setSelectedDate(selectedDate);
+      setDate(moment(selectedDate).format('DD/MM/YYYY'));
+    }
+  };
+
+  const confirmDateSelection = () => {
+    setShowDatePicker(false);
+  };
+
+  const openDatePicker = () => {
+    setShowDatePicker(true);
+  };
+
   const handleContinue = () => {
-    console.log({ amount, selectedCategory, date, note });
-  };
+    if (!amount || !selectedCategory || !title || !date) {
+      Alert.alert("Error", "Please fill in all required fields");
+      return;
+    }
 
-  const onModalOpened = () => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: { display: "none" },
-    });
-  };
+    dispatch(addExpense({
+      title,
+      amount: parseFloat(amount.replace(/,/g, "")),
+      category: selectedCategory,
+      date,
+      note,
+    }));
 
-  const onModalClosed = () => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: {
-        ...Platform.select({
-          ios: {
-            position: "absolute",
-            height: 85,
-          },
-          android: {
-            height: 70,
-          },
-        }),
-      },
-    });
+    setAmount("");
+    setTitle("");
+    setNote("");
+    setDate(moment().format('DD/MM/YYYY'));
+    dispatch(setSelectedCategory(null));
+
+    Alert.alert("Success", "Expense added successfully!", [
+      { text: "OK", onPress: () => router.back() }
+    ]);
   };
 
   return (
@@ -123,20 +117,14 @@ export default function AddExpenseScreen() {
         <KeyboardAvoidingView
           style={styles.container}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
-          keyboardVerticalOffset={Platform.select({
-            ios: 60,
-            android: 0,
-          })}
         >
           <ScrollView
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="interactive"
             showsVerticalScrollIndicator={false}
           >
             <Text style={styles.screenTitle}>Add Expense</Text>
 
-            {/* Amount Input */}
             <View style={styles.amountContainer}>
               <Text style={styles.howMuchText}>How much?</Text>
               <View style={styles.amountInputRow}>
@@ -153,7 +141,17 @@ export default function AddExpenseScreen() {
               </View>
             </View>
 
-            {/* Category */}
+            <Text style={styles.label}>Title</Text>
+            <View style={styles.inputBox}>
+              <TextInput
+                style={styles.titleInput}
+                placeholder="Enter expense title"
+                placeholderTextColor="#64748B"
+                value={title}
+                onChangeText={setTitle}
+              />
+            </View>
+
             <Text style={styles.label}>Category</Text>
             <TouchableOpacity
               onPress={openCategoryPicker}
@@ -169,20 +167,21 @@ export default function AddExpenseScreen() {
               <Text style={styles.chevron}>⌄</Text>
             </TouchableOpacity>
 
-            {/* Date */}
             <Text style={styles.label}>Expense date</Text>
             <View style={[styles.inputBox, styles.row]}>
-              <TextInput
-                style={styles.flex}
-                placeholder="DD/MM/YYYY"
-                placeholderTextColor="#777"
-                value={date}
-                onChangeText={setDate}
-              />
-              <CalendarIcon width={20} height={20} color="#EC4899" />
+              <Pressable 
+                style={styles.dateInputPressable}
+                onPress={openDatePicker}
+              >
+                <Text style={styles.dateText}>
+                  {date}
+                </Text>
+              </Pressable>
+              <TouchableOpacity onPress={openDatePicker}>
+                <CalendarIcon width={20} height={20} color="#EC4899" />
+              </TouchableOpacity>
             </View>
 
-            {/* Upload */}
             <TouchableOpacity style={styles.uploadBox}>
               <View style={styles.uploadRow}>
                 <UploadIcon width={24} height={24} color="#666" />
@@ -198,7 +197,6 @@ export default function AddExpenseScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Note */}
             <Text style={styles.label}>Note</Text>
             <View style={styles.noteBox}>
               <TextInput
@@ -212,11 +210,7 @@ export default function AddExpenseScreen() {
               />
             </View>
 
-            {/* Buttons */}
             <View style={styles.buttonRow}>
-              {/* <TouchableOpacity style={styles.cancelBtn}>
-                <Text style={styles.cancelTxt}>Cancel</Text>
-              </TouchableOpacity> */}
               <TouchableOpacity
                 style={styles.cancelBtn}
                 onPress={() => router.back()}
@@ -234,28 +228,50 @@ export default function AddExpenseScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
 
-        {/* Category Bottom Sheet */}
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={showDatePicker}
+          onRequestClose={() => setShowDatePicker(false)}
+        >
+          <View style={styles.centeredModalContainer}>
+            <View style={styles.centeredModalContent}>
+              <DateTimePicker
+                value={selectedDate}
+                mode="date"
+                display="spinner"
+                onChange={handleDateChange}
+                style={styles.fullWidthDatePicker}
+              />
+              <View style={styles.modalActionButtons}>
+                <TouchableOpacity 
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setShowDatePicker(false)}
+                >
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.modalButton, styles.confirmButton]}
+                  onPress={confirmDateSelection}
+                >
+                  <Text style={styles.modalButtonText}>Confirm</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
         <Modalize
           ref={modalizeRef}
           modalHeight={600}
           modalStyle={styles.modalStyle}
-          onClosed={onModalClosed}
-          onOpened={onModalOpened}
           withHandle={true}
           handlePosition="inside"
-          scrollViewProps={{
-            showsVerticalScrollIndicator: false,
-            contentContainerStyle: { paddingBottom: 20 },
-          }}
         >
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Select a Category</Text>
           </View>
-          <ScrollView
-            style={styles.modalScrollView}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.modalScrollContent}
-          >
+          <ScrollView showsVerticalScrollIndicator={false}>
             {categories.map((cat, index) => (
               <TouchableOpacity
                 key={cat.key}
@@ -271,7 +287,7 @@ export default function AddExpenseScreen() {
                     { backgroundColor: cat.color + "22" },
                   ]}
                 >
-                  {React.cloneElement(cat.icon, { color: cat.color })}
+                  {React.cloneElement(getIconForCategory(cat.key), { color: cat.color })}
                 </View>
                 <Text style={styles.modalKey}>{cat.key}</Text>
                 <Text style={styles.modalChevron}>›</Text>
@@ -348,6 +364,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  titleInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "#000",
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -359,6 +380,13 @@ const styles = StyleSheet.create({
   placeholder: {
     color: "#64748B",
     fontSize: 16,
+  },
+  dateText: {
+    color: "#000",
+    fontSize: 16,
+  },
+  dateInputPressable: {
+    flex: 1,
   },
   categoryText: {
     color: "#000",
@@ -452,12 +480,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#000",
   },
-  modalScrollView: {
-    flex: 1,
-  },
-  modalScrollContent: {
-    paddingBottom: 40,
-  },
   modalRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -484,5 +506,51 @@ const styles = StyleSheet.create({
   modalChevron: {
     color: "#9CA3AF",
     fontSize: 18,
+  },
+  // Centered Date Picker Styles
+  centeredModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  centeredModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    width: '90%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  fullWidthDatePicker: {
+    width: '100%',
+  },
+  modalActionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 16,
+    gap: 12,
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  cancelButton: {
+    backgroundColor: '#F3F4F6',
+  },
+  confirmButton: {
+    backgroundColor: '#2563EB',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

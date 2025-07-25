@@ -9,121 +9,66 @@ import {
   View,
 } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
-
-// SVG imports (adjust paths based on your project)
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 import EntertainmentIcon from "@/assets/images/entertainment.svg";
 import FamilyIcon from "@/assets/images/family.svg";
 import FoodIcon from "@/assets/images/food.svg";
 import HouseIcon from "@/assets/images/housing.svg";
-// import FoodIcon from "@/assets/images/food.svg";
 import HealthIcon from "@/assets/images/health.svg";
-// import HouseIcon from "@/assets/images/housing.svg";
 import ShopIcon from "@/assets/images/shopping.svg";
 import TravelIcon from "@/assets/images/travel.svg";
+import CarIcon from "@/assets/images/car.svg";
+
 const { width } = Dimensions.get("window");
 
+const getIconForCategory = (categoryKey: string) => {
+  const iconMap: { [key: string]: JSX.Element } = {
+    "Food & Drinks": <FoodIcon width={24} height={24} />,
+    "Housing": <HouseIcon width={24} height={24} />,
+    "Shopping": <ShopIcon width={24} height={24} />,
+    "Family": <FamilyIcon width={24} height={24} />,
+    "Transportation": <CarIcon width={24} height={24} />,
+    "Travel/Vacation": <TravelIcon width={24} height={24} />,
+    "Entertainment": <EntertainmentIcon width={24} height={24} />,
+    "Health": <HealthIcon width={24} height={24} />,
+  };
+  return iconMap[categoryKey] || <HouseIcon width={24} height={24} />;
+};
+
 const AnalyticsScreen = () => {
+  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+  const categories = useSelector((state: RootState) => state.expenses.categories);
+  
   const [selectedFilter, setSelectedFilter] = useState("All");
-  const [selectedSlice, setSelectedSlice] = useState(null);
 
-  const chartData = [
-    { value: 50000, label: "Food & Drinks", color: "#F04438" },
-    { value: 30000, label: "Housing", color: "#FACC15" },
-    { value: 20000, label: "Shopping", color: "#F97316" },
-    { value: 10000, label: "Travel & Vacation", color: "#800080" },
-    { value: 15000, label: "Family", color: "#039855" },
-    { value: 10000, label: "Transportation", color: "#005EE8" },
-  ].map((item) => ({
-    ...item,
-    onPress: () => setSelectedSlice(item),
-  }));
+  // Calculate spending by category
+  const categorySpending = categories.map(category => {
+    const categoryExpenses = expenses.filter(expense => 
+      expense.category.key === category.key
+    );
+    const total = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+    
+    return {
+      value: total,
+      label: category.key,
+      color: category.color,
+      onPress: () => console.log(`Pressed ${category.key}`),
+    };
+  }).filter(item => item.value > 0);
 
-  const categoriesData = [
-    {
-      title: "Food & Drinks",
-      amount: 12000,
-      icon: <FoodIcon width={24} height={24} />,
-      color: "#F04438",
-    },
-    {
-      title: "Housing",
-      amount: 12000,
-      icon: <HouseIcon width={24} height={24} />,
-      color: "#FACC15",
-    },
-    {
-      title: "Entertainment",
-      amount: 12000,
-      icon: <EntertainmentIcon width={24} height={24} />,
-      color: "#800080",
-    },
-    {
-      title: "Family",
-      amount: 12000,
-      icon: <FamilyIcon width={24} height={24} />,
-      color: "#039855",
-    },
-    {
-      title: "Health",
-      amount: 12000,
-      icon: <HealthIcon width={24} height={24} />,
-      color: "#039855",
-    },
-    {
-      title: "Shop",
-      amount: 12000,
-      icon: <ShopIcon width={24} height={24} />,
-      color: "#F97316",
-    },
-    {
-      title: "Travel",
-      amount: 12000,
-      icon: <TravelIcon width={24} height={24} />,
-      color: "#800080",
-    },
-  ];
-
-  const transactionData = [
-    {
-      title: "Cooking gas",
-      category: "Housing",
-      amount: 12000,
-      date: "Sun, 16 Jan",
-      color: "#F97316",
-    },
-    {
-      title: "A/C Repair",
-      category: "Car",
-      amount: 36000,
-      date: "Sun, 16 Jan",
-      color: "#22C55E",
-    },
-    {
-      title: "Bolu Upkeep",
-      category: "Family",
-      amount: 10000,
-      date: "Sun, 16 Jan",
-      color: "#3B82F6",
-    },
-    {
-      title: "Food",
-      category: "Housing",
-      amount: 12000,
-      date: "Sun, 16 Jan",
-      color: "#F97316",
-    },
-    {
-      title: "A/C Repair",
-      category: "Car",
-      amount: 36000,
-      date: "Sun, 16 Jan",
-      color: "#22C55E",
-    },
-  ];
-
-  const totalExpense = chartData.reduce((acc, item) => acc + item.value, 0);
+  const totalExpense = categorySpending.reduce((acc, item) => acc + item.value, 0);
   const radius = width * 0.42;
   const innerRadius = radius * 0.75;
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      day: 'numeric', 
+      month: 'short' 
+    });
+  };
 
   return (
     <Layout>
@@ -162,28 +107,29 @@ const AnalyticsScreen = () => {
         </View>
 
         {/* Pie Chart */}
-        <View style={styles.chartContainer}>
-          <PieChart
-            data={chartData}
-            donut
-            innerRadius={innerRadius}
-            radius={radius}
-            showText
-            textStyle={{ color: "#000", fontSize: 14 }}
-            textPosition="inside"
-          />
-          <View style={styles.centerTextContainer}>
-            <Text style={styles.totalExpenseText}>Total Expense</Text>
-            <Text style={styles.totalAmount}>
-              ₦ {totalExpense.toLocaleString()}
-            </Text>
+        {categorySpending.length > 0 && (
+          <View style={styles.chartContainer}>
+            <PieChart
+              data={categorySpending}
+              donut
+              innerRadius={innerRadius}
+              radius={radius}
+              showText
+              textStyle={{ color: "#000", fontSize: 12 }}
+            />
+            <View style={styles.centerTextContainer}>
+              <Text style={styles.totalExpenseText}>Total Expense</Text>
+              <Text style={styles.totalAmount}>
+                ₦ {totalExpense.toLocaleString()}
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Legend */}
         <View style={styles.legendContainer}>
           <View style={styles.legendColumn}>
-            {chartData.slice(0, 3).map((item, index) => (
+            {categorySpending.slice(0, Math.ceil(categorySpending.length / 2)).map((item, index) => (
               <View key={index} style={styles.legendItem}>
                 <View
                   style={[styles.legendDot, { backgroundColor: item.color }]}
@@ -193,8 +139,8 @@ const AnalyticsScreen = () => {
             ))}
           </View>
           <View style={styles.legendColumn}>
-            {chartData.slice(3).map((item, index) => (
-              <View key={index + 3} style={styles.legendItem}>
+            {categorySpending.slice(Math.ceil(categorySpending.length / 2)).map((item, index) => (
+              <View key={index} style={styles.legendItem}>
                 <View
                   style={[styles.legendDot, { backgroundColor: item.color }]}
                 />
@@ -218,7 +164,7 @@ const AnalyticsScreen = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categoryCardsWrapper}
           >
-            {categoriesData.map((cat, index) => (
+            {categorySpending.map((cat, index) => (
               <View key={index} style={styles.categoryCard}>
                 <View
                   style={[
@@ -226,11 +172,11 @@ const AnalyticsScreen = () => {
                     { backgroundColor: cat.color + "20" },
                   ]}
                 >
-                  {cat.icon}
+                  {getIconForCategory(cat.label)}
                 </View>
-                <Text style={styles.categoryTitle}>{cat.title}</Text>
+                <Text style={styles.categoryTitle}>{cat.label}</Text>
                 <Text style={styles.categoryAmount}>
-                  ₦ {cat.amount.toLocaleString()}
+                  ₦ {cat.value.toLocaleString()}
                 </Text>
               </View>
             ))}
@@ -241,27 +187,27 @@ const AnalyticsScreen = () => {
         <Text style={styles.transactionTitle}>Transaction History</Text>
 
         <View style={styles.transactionList}>
-          {transactionData.map((item, index) => (
-            <View key={index} style={styles.transactionItem}>
+          {expenses.slice(0, 5).map((expense) => (
+            <View key={expense.id} style={styles.transactionItem}>
               <View style={styles.transactionLeft}>
                 <View
                   style={[
                     styles.transactionDot,
-                    { backgroundColor: item.color },
+                    { backgroundColor: expense.category.color },
                   ]}
                 />
                 <View>
-                  <Text style={styles.transactionTitleText}>{item.title}</Text>
+                  <Text style={styles.transactionTitleText}>{expense.title}</Text>
                   <Text style={styles.transactionCategory}>
-                    {item.category}
+                    {expense.category.key}
                   </Text>
                 </View>
               </View>
               <View style={styles.transactionRight}>
                 <Text style={styles.transactionAmount}>
-                  ₦ {item.amount.toLocaleString()}
+                  ₦ {expense.amount.toLocaleString()}
                 </Text>
-                <Text style={styles.transactionDate}>{item.date}</Text>
+                <Text style={styles.transactionDate}>{formatDate(expense.date)}</Text>
               </View>
             </View>
           ))}
@@ -276,9 +222,6 @@ const AnalyticsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  // scrollContainer: {
-  //   paddingBottom: 40,
-  // },
   headerContainer: {
     paddingHorizontal: 20,
     marginTop: 10,
