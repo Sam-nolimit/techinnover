@@ -30,7 +30,6 @@ const SpendCarousel = () => {
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Calculate daily spending from Redux data
   const getDailySpending = (date: Date) => {
     const dateString = date.toISOString().split('T')[0];
     return expenses
@@ -73,7 +72,6 @@ const SpendCarousel = () => {
     setCurrentIndex(index);
   };
 
-  // Update data when expenses change
   useEffect(() => {
     setData(prevData => 
       prevData.map(item => ({

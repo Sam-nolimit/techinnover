@@ -20,6 +20,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarLabelStyle: {
       fontFamily: 'LatoBold', 
+      fontSize: 14,
     },
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].tabIconDefault,
@@ -43,9 +44,9 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ focused, color }) => focused ? (
-            <HomeIconFocus width={24} height={24} fill={color} />
+            <HomeIconFocus width={28} height={28} fill={color} />
           ) : (
-            <HomeIcon width={24} height={24} />
+            <HomeIcon width={28} height={28} />
           ),
         }}
       />
@@ -55,7 +56,7 @@ export default function TabLayout() {
           title: '',
           tabBarIcon: ({ color }) => (
             <View style={styles.addExpenseIcon}>
-              <AddExpenseIcon width={54} height={54} fill={color} />
+              <AddExpenseIcon width={74} height={74} fill={color} />
             </View>
           ),
           tabBarLabelStyle: {
@@ -69,9 +70,9 @@ export default function TabLayout() {
         options={{
           title: 'Analytics',
           tabBarIcon: ({ focused, color }) => focused ? (
-            <AnalyticsIconFocus width={24} height={24} fill={color} />
+            <AnalyticsIconFocus width={28} height={28} fill={color} />
           ) : (
-            <AnalyticsIcon width={24} height={24} />
+            <AnalyticsIcon width={28} height={28} />
           ),
         }}
       />

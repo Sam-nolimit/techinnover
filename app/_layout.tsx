@@ -23,14 +23,6 @@ const LoadingScreen = () => (
     backgroundColor: '#fff' 
   }}>
     <ActivityIndicator size="large" color="#2563EB" />
-    {/* <Text style={{ 
-      marginTop: 16, 
-      fontSize: 16, 
-      color: '#666',
-      fontFamily: 'LatoRegular'
-    }}>
-      Loading...
-    </Text> */}
   </View>
 );
 

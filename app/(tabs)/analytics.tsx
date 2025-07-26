@@ -1,3 +1,11 @@
+import CarIcon from "@/assets/images/car.svg";
+import EntertainmentIcon from "@/assets/images/entertainment.svg";
+import FamilyIcon from "@/assets/images/family.svg";
+import FoodIcon from "@/assets/images/food.svg";
+import HealthIcon from "@/assets/images/health.svg";
+import HouseIcon from "@/assets/images/housing.svg";
+import ShopIcon from "@/assets/images/shopping.svg";
+import TravelIcon from "@/assets/images/travel.svg";
 import Layout from "@/constants/Layout";
 import React, { useState } from "react";
 import {
@@ -9,64 +17,66 @@ import {
   View,
 } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
-import EntertainmentIcon from "@/assets/images/entertainment.svg";
-import FamilyIcon from "@/assets/images/family.svg";
-import FoodIcon from "@/assets/images/food.svg";
-import HouseIcon from "@/assets/images/housing.svg";
-import HealthIcon from "@/assets/images/health.svg";
-import ShopIcon from "@/assets/images/shopping.svg";
-import TravelIcon from "@/assets/images/travel.svg";
-import CarIcon from "@/assets/images/car.svg";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 const { width } = Dimensions.get("window");
 
 const getIconForCategory = (categoryKey: string) => {
   const iconMap: { [key: string]: JSX.Element } = {
-    "Food & Drinks": <FoodIcon width={24} height={24} />,
-    "Housing": <HouseIcon width={24} height={24} />,
-    "Shopping": <ShopIcon width={24} height={24} />,
-    "Family": <FamilyIcon width={24} height={24} />,
-    "Transportation": <CarIcon width={24} height={24} />,
-    "Travel/Vacation": <TravelIcon width={24} height={24} />,
-    "Entertainment": <EntertainmentIcon width={24} height={24} />,
-    "Health": <HealthIcon width={24} height={24} />,
+    "Food & Drinks": <FoodIcon width={30} height={30} />,
+    Housing: <HouseIcon width={30} height={30} />,
+    Shopping: <ShopIcon width={30} height={30} />,
+    Family: <FamilyIcon width={30} height={30} />,
+    Transportation: <CarIcon width={30} height={30} />,
+    "Travel/Vacation": <TravelIcon width={30} height={30} />,
+    Entertainment: <EntertainmentIcon width={30} height={30} />,
+    Health: <HealthIcon width={30} height={30} />,
   };
-  return iconMap[categoryKey] || <HouseIcon width={24} height={24} />;
+  return iconMap[categoryKey] || <HouseIcon width={30} height={30} />;
 };
 
 const AnalyticsScreen = () => {
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
-  const categories = useSelector((state: RootState) => state.expenses.categories);
-  
+  const categories = useSelector(
+    (state: RootState) => state.expenses.categories
+  );
+
   const [selectedFilter, setSelectedFilter] = useState("All");
 
   // Calculate spending by category
-  const categorySpending = categories.map(category => {
-    const categoryExpenses = expenses.filter(expense => 
-      expense.category.key === category.key
-    );
-    const total = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-    
-    return {
-      value: total,
-      label: category.key,
-      color: category.color,
-      onPress: () => console.log(`Pressed ${category.key}`),
-    };
-  }).filter(item => item.value > 0);
+  const categorySpending = categories
+    .map((category) => {
+      const categoryExpenses = expenses.filter(
+        (expense) => expense.category.key === category.key
+      );
+      const total = categoryExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
 
-  const totalExpense = categorySpending.reduce((acc, item) => acc + item.value, 0);
+      return {
+        value: total,
+        label: category.key,
+        color: category.color,
+        onPress: () => console.log(`Pressed ${category.key}`),
+      };
+    })
+    .filter((item) => item.value > 0);
+
+  const totalExpense = categorySpending.reduce(
+    (acc, item) => acc + item.value,
+    0
+  );
   const radius = width * 0.42;
   const innerRadius = radius * 0.75;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      day: 'numeric', 
-      month: 'short' 
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
     });
   };
 
@@ -79,7 +89,7 @@ const AnalyticsScreen = () => {
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>Expense Report</Text>
           <TouchableOpacity style={styles.dropdown}>
-            <Text style={styles.dropdownText}>This year (2024) ▼</Text>
+            <Text style={styles.dropdownText}>This year (2025) ▼</Text>
           </TouchableOpacity>
         </View>
 
@@ -115,7 +125,11 @@ const AnalyticsScreen = () => {
               innerRadius={innerRadius}
               radius={radius}
               showText
-              textStyle={{ color: "#000", fontSize: 12 }}
+              textStyle={{
+                color: "#000",
+                fontSize: 12,
+                fontFamily: "LatoBold",
+              }}
             />
             <View style={styles.centerTextContainer}>
               <Text style={styles.totalExpenseText}>Total Expense</Text>
@@ -129,28 +143,31 @@ const AnalyticsScreen = () => {
         {/* Legend */}
         <View style={styles.legendContainer}>
           <View style={styles.legendColumn}>
-            {categorySpending.slice(0, Math.ceil(categorySpending.length / 2)).map((item, index) => (
-              <View key={index} style={styles.legendItem}>
-                <View
-                  style={[styles.legendDot, { backgroundColor: item.color }]}
-                />
-                <Text style={styles.legendLabel}>{item.label}</Text>
-              </View>
-            ))}
+            {categorySpending
+              .slice(0, Math.ceil(categorySpending.length / 2))
+              .map((item, index) => (
+                <View key={index} style={styles.legendItem}>
+                  <View
+                    style={[styles.legendDot, { backgroundColor: item.color }]}
+                  />
+                  <Text style={styles.legendLabel}>{item.label}</Text>
+                </View>
+              ))}
           </View>
           <View style={styles.legendColumn}>
-            {categorySpending.slice(Math.ceil(categorySpending.length / 2)).map((item, index) => (
-              <View key={index} style={styles.legendItem}>
-                <View
-                  style={[styles.legendDot, { backgroundColor: item.color }]}
-                />
-                <Text style={styles.legendLabel}>{item.label}</Text>
-              </View>
-            ))}
+            {categorySpending
+              .slice(Math.ceil(categorySpending.length / 2))
+              .map((item, index) => (
+                <View key={index} style={styles.legendItem}>
+                  <View
+                    style={[styles.legendDot, { backgroundColor: item.color }]}
+                  />
+                  <Text style={styles.legendLabel}>{item.label}</Text>
+                </View>
+              ))}
           </View>
         </View>
 
-        {/* Categories Section */}
         <View style={styles.categoriesContainer}>
           <View style={styles.categoriesHeader}>
             <Text style={styles.transactionTitle}>Categories</Text>
@@ -166,15 +183,11 @@ const AnalyticsScreen = () => {
           >
             {categorySpending.map((cat, index) => (
               <View key={index} style={styles.categoryCard}>
-                <View
-                  style={[
-                    styles.categoryIconContainer,
-                    { backgroundColor: cat.color + "20" },
-                  ]}
-                >
+                <Text style={styles.categoryTitle}>{cat.label}</Text>
+
+                <View style={[styles.categoryIconContainer]}>
                   {getIconForCategory(cat.label)}
                 </View>
-                <Text style={styles.categoryTitle}>{cat.label}</Text>
                 <Text style={styles.categoryAmount}>
                   ₦ {cat.value.toLocaleString()}
                 </Text>
@@ -183,7 +196,6 @@ const AnalyticsScreen = () => {
           </ScrollView>
         </View>
 
-        {/* Transaction History */}
         <Text style={styles.transactionTitle}>Transaction History</Text>
 
         <View style={styles.transactionList}>
@@ -197,7 +209,9 @@ const AnalyticsScreen = () => {
                   ]}
                 />
                 <View>
-                  <Text style={styles.transactionTitleText}>{expense.title}</Text>
+                  <Text style={styles.transactionTitleText}>
+                    {expense.title}
+                  </Text>
                   <Text style={styles.transactionCategory}>
                     {expense.category.key}
                   </Text>
@@ -207,7 +221,9 @@ const AnalyticsScreen = () => {
                 <Text style={styles.transactionAmount}>
                   ₦ {expense.amount.toLocaleString()}
                 </Text>
-                <Text style={styles.transactionDate}>{formatDate(expense.date)}</Text>
+                <Text style={styles.transactionDate}>
+                  {formatDate(expense.date)}
+                </Text>
               </View>
             </View>
           ))}
@@ -231,7 +247,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "LatoBold",
     color: "#0F172A",
   },
   dropdown: {
@@ -243,6 +259,7 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: "#1E293B",
     fontSize: 14,
+    fontFamily: "LatoBold",
   },
   tabContainer: {
     flexDirection: "row",
@@ -264,10 +281,12 @@ const styles = StyleSheet.create({
   tabText: {
     color: "#64748B",
     fontSize: 14,
+    fontFamily: "LatoBold",
     fontWeight: "500",
   },
   tabTextActive: {
     color: "#fff",
+    fontFamily: "LatoBold",
   },
   chartContainer: {
     alignItems: "center",
@@ -281,12 +300,12 @@ const styles = StyleSheet.create({
   },
   totalExpenseText: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "LatoBold",
     color: "#333",
   },
   totalAmount: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontFamily: "LatoBold",
     color: "#333",
   },
   legendContainer: {
@@ -311,7 +330,8 @@ const styles = StyleSheet.create({
   },
   legendLabel: {
     fontSize: 16,
-    color: "#333",
+    color: "#667085",
+    fontFamily: "LatoRegular",
   },
   categoriesContainer: {
     paddingHorizontal: 20,
@@ -324,8 +344,12 @@ const styles = StyleSheet.create({
   },
   addCategory: {
     color: "#2563EB",
+    fontFamily: "LatoBold",
     fontWeight: "600",
     fontSize: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#2563EB",
+    paddingBottom: 2,
   },
   categoryCardsWrapper: {
     flexDirection: "row",
@@ -349,23 +373,23 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
   },
   categoryTitle: {
     fontSize: 14,
+    fontFamily: "LatoBold",
     fontWeight: "600",
-    color: "#0F172A",
+    color: "#101828",
     textAlign: "center",
   },
   categoryAmount: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "LatoBold",
     color: "#0F172A",
     marginTop: 4,
   },
   transactionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "LatoBold",
     marginTop: 40,
     marginBottom: 20,
     paddingHorizontal: 20,
@@ -398,24 +422,28 @@ const styles = StyleSheet.create({
   },
   transactionTitleText: {
     fontSize: 16,
+    fontFamily: "LatoBold",
     fontWeight: "500",
     color: "#000",
   },
   transactionCategory: {
     fontSize: 14,
     color: "#666",
+    fontFamily: "LatoBold",
   },
   transactionRight: {
     alignItems: "flex-end",
   },
   transactionAmount: {
     fontSize: 16,
+    fontFamily: "LatoBold",
     fontWeight: "600",
     color: "#000",
   },
   transactionDate: {
     fontSize: 13,
     color: "#666",
+    fontFamily: "LatoBold",
   },
   loadMoreBtn: {
     marginTop: 10,
@@ -428,6 +456,7 @@ const styles = StyleSheet.create({
   },
   loadMoreText: {
     color: "#1D4ED8",
+    fontFamily: "LatoBold",
     fontWeight: "600",
   },
 });

@@ -18,25 +18,23 @@ const QuickLinkCard = ({ Icon, label, onPress }: QuickLinkCardProps) => {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
+    width: '48%',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 16,
-    paddingVertical: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 6,
+    padding: 16,
+    marginBottom: 12,
+    alignItems: 'flex-start',
+    backgroundColor: '#fff',
   },
   iconWrapper: {
-    backgroundColor: '#0063F7',
-    borderRadius: 999,
-    padding: 12,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   label: {
     color: '#0063F7',
     fontSize: 14,
     fontWeight: '500',
+    fontFamily: 'LatoBold',
   },
 });
 

@@ -36,13 +36,14 @@ export default Layout;
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
+    backgroundColor: "#fff",
   },
   scrollView: {
     flex: 1,
   },
   container: {
     flexGrow: 1,
-    paddingBottom: hp("15%"), // Increased bottom padding
+    paddingBottom: hp("15%"),
   },
   content: {
     paddingHorizontal: wp("4%"),

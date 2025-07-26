@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 type RecentTransactionItemProps = {
   icon: React.ReactNode;
@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#eee',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -55,12 +54,16 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: '600',
     fontSize: 16,
-    color: '#1A1A1A',
+    color: '#101828',
+    fontFamily: "LatoBold",
+
   },
   subtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#667085',
     marginTop: 2,
+    fontFamily: "LatoRegular",
+
   },
   amountContainer: {
     alignItems: 'flex-end',
@@ -68,12 +71,14 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1A1A',
+    color: '#101828',
+    fontFamily: "LatoBold",
   },
   date: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#667085',
     marginTop: 2,
+    fontFamily: "LatoRegular",
   },
 });
 

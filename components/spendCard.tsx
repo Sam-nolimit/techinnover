@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 14,
     marginBottom: 8,
+    fontFamily: "LatoBold",
   },
   amountContainer: {
     marginBottom: 12,
@@ -208,10 +209,14 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     marginRight: 2,
+    fontFamily: "LatoBold",
+
   },
   staticChar: {
     color: "#FFFFFF",
     fontWeight: "bold",
+    fontFamily: "LatoBold",
+
   },
   tickerContainer: {
     overflow: "hidden",
@@ -238,6 +243,8 @@ const styles = StyleSheet.create({
   differenceText: {
     color: "#B3B7C2",
     fontSize: 13,
+    fontFamily: "LatoBold",
+
   },
 });
 

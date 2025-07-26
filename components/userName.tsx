@@ -55,12 +55,13 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#000",
+    color: "#667085",
+    fontFamily: "LatoBold",
   },
   nameText: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#000",
-    fontFamily: "latoLight",
+    fontFamily: "LatoBold",
   },
 });
