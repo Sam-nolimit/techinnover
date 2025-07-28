@@ -79,7 +79,8 @@ export default function AddExpenseScreen() {
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
       setSelectedDate(selectedDate);
-      setDate(moment(selectedDate).format("DD/MM/YYYY"));
+      const formattedDate = moment(selectedDate).format("DD/MM/YYYY");
+      setDate(formattedDate);
     }
   };
 
@@ -104,9 +105,22 @@ export default function AddExpenseScreen() {
     }
   };
 
+  const removeImage = () => {
+    setImage(null);
+  };
+
   const handleContinue = () => {
     if (!amount || !selectedCategory || !title || !date) {
       Alert.alert("Error", "Please fill in all required fields");
+      return;
+    }
+
+    // Validate date format before saving
+    const dateIsValid = moment(date, "DD/MM/YYYY", true).isValid();
+    console.log("Date validation:", dateIsValid, "Date:", date);
+    
+    if (!dateIsValid) {
+      Alert.alert("Error", "Invalid date format");
       return;
     }
 
@@ -204,7 +218,15 @@ export default function AddExpenseScreen() {
 
             <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
               {image ? (
-                <Image source={{ uri: image }} style={styles.uploadedImage} />
+                <View style={styles.imageContainer}>
+                  <Image source={{ uri: image }} style={styles.uploadedImage} />
+                  <TouchableOpacity 
+                    style={styles.removeImageButton} 
+                    onPress={removeImage}
+                  >
+                    <Text style={styles.removeImageText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
               ) : (
                 <View style={styles.uploadRow}>
                   <UploadIcon width={44} height={44} color="#666" />
@@ -439,11 +461,30 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     justifyContent: "center",
   },
+  imageContainer: {
+    position: "relative",
+  },
   uploadedImage: {
     width: "100%",
     height: 200,
     borderRadius: 8,
     resizeMode: "cover",
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  removeImageText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   uploadRow: {
     flexDirection: "row",

@@ -38,7 +38,7 @@ const initialExpenses: Expense[] = [
     title: 'Cooking gas',
     amount: 12000,
     category: { key: 'Housing', color: '#FACC15' },
-    date: '2024-01-16',
+    date: '2025-01-16',
     note: 'Monthly gas refill'
   },
   {
@@ -46,7 +46,7 @@ const initialExpenses: Expense[] = [
     title: 'A/C Repair',
     amount: 36000,
     category: { key: 'Transportation', color: '#005EE8' },
-    date: '2024-01-16',
+    date: '2025-07-16',
     note: 'Car maintenance'
   },
   {
@@ -54,7 +54,7 @@ const initialExpenses: Expense[] = [
     title: 'Pizza Delivery',
     amount: 4500,
     category: { key: 'Food & Drinks', color: '#F04438' },
-    date: '2024-01-15',
+    date: '2025-07-15',
     note: 'Weekend dinner'
   },
   {
@@ -62,7 +62,7 @@ const initialExpenses: Expense[] = [
     title: 'Netflix Subscription',
     amount: 2200,
     category: { key: 'Entertainment', color: '#1F2937' },
-    date: '2024-01-14',
+    date: '2025-07-14',
     note: 'Monthly subscription'
   },
   {
@@ -70,7 +70,7 @@ const initialExpenses: Expense[] = [
     title: 'Medical Checkup',
     amount: 15000,
     category: { key: 'Health', color: '#EF4444' },
-    date: '2024-01-13',
+    date: '2025-07-13',
     note: 'Annual checkup'
   },
 ];

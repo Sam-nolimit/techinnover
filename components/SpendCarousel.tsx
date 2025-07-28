@@ -9,7 +9,7 @@ import {
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import SpendCard from "./spendCard";
-import TrendDownIcon from "../assets/images/trend-down.svg";
+import moment from "moment";
 
 const formatDate = (date: Date) => {
   const options: Intl.DateTimeFormatOptions = { 
@@ -31,9 +31,18 @@ const SpendCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const getDailySpending = (date: Date) => {
-    const dateString = date.toISOString().split('T')[0];
+    const targetDateString = moment(date).format("DD/MM/YYYY");
+    
     return expenses
-      .filter(expense => expense.date === dateString)
+      .filter(expense => {
+        let expenseDate = expense.date;
+        
+        if (expense.date.includes('-') && expense.date.split('-')[0].length === 4) {
+          expenseDate = moment(expense.date, "YYYY-MM-DD").format("DD/MM/YYYY");
+        }
+        
+        return expenseDate === targetDateString;
+      })
       .reduce((total, expense) => total + expense.amount, 0);
   };
 
@@ -41,25 +50,25 @@ const SpendCarousel = () => {
     {
       id: "1",
       date: new Date(), 
-      amount: getDailySpending(new Date()),
+      amount: 0,
       differenceText: "47% below than yesterday",
     },
     {
       id: "2",
       date: getPreviousDate(1), 
-      amount: getDailySpending(getPreviousDate(1)),
+      amount: 0, 
       differenceText: "12% higher than previous",
     },
     {
       id: "3",
       date: getPreviousDate(2),
-      amount: getDailySpending(getPreviousDate(2)),
+      amount: 0, 
       differenceText: "5% below than previous",
     },
     {
       id: "4",
       date: getPreviousDate(3),
-      amount: getDailySpending(getPreviousDate(3)),
+      amount: 0, 
       differenceText: "5% below than previous",
     },
   ]);
@@ -99,7 +108,7 @@ const SpendCarousel = () => {
                   ? `Yesterday's spend (${formatDate(item.date)})` 
                   : formatDate(item.date)
             }
-            amount={item.amount.toLocaleString()}
+            amount={item.amount}
             differenceText={item.differenceText}
             // icon={<TrendDownIcon width={18} height={18} />}
           />

@@ -16,12 +16,16 @@ const RecentTransactionItem = ({
   amount,
   date,
 }: RecentTransactionItemProps) => {
+  const truncatedTitle = title.length > 25 ? `${title.substring(0, 25)}...` : title;
+
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>{icon}</View>
 
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>
+          {truncatedTitle}
+        </Text>
         <Text style={styles.subtitle}>{subtitle}</Text>
       </View>
 
@@ -56,14 +60,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#101828',
     fontFamily: "LatoBold",
-
   },
   subtitle: {
     fontSize: 14,
     color: '#667085',
     marginTop: 2,
     fontFamily: "LatoRegular",
-
   },
   amountContainer: {
     alignItems: 'flex-end',

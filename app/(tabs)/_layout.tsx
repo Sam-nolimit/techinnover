@@ -10,7 +10,6 @@ import HomeIconFocus from '@/assets/images/tabIcon/homeFocus.svg';
 import AnalyticsIcon from '@/assets/images/tabIcon/chart.svg';
 import AnalyticsIconFocus from '@/assets/images/tabIcon/chartFocus.svg';
 import AddExpenseIcon from '@/assets/images/tabIcon/add-circle.svg';
-import { useFonts } from 'expo-font';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();

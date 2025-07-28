@@ -116,7 +116,6 @@ const AnalyticsScreen = () => {
           ))}
         </View>
 
-        {/* Pie Chart */}
         {categorySpending.length > 0 && (
           <View style={styles.chartContainer}>
             <PieChart
@@ -251,17 +250,18 @@ const styles = StyleSheet.create({
     color: "#0F172A",
   },
   dropdown: {
-    backgroundColor: "#F1F5F9",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
+    borderColor: "#CBD5E1",
+    borderWidth: 1,
   },
   dropdownText: {
-    color: "#1E293B",
+    color: "#64748B",
     fontSize: 14,
-    fontFamily: "LatoBold",
+    fontFamily: "LatoRegular",
   },
-  tabContainer: {
+   tabContainer: {
     flexDirection: "row",
     paddingHorizontal: 20,
     marginVertical: 16,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     borderColor: "#CBD5E1",
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 20,
+    borderRadius: 12,
   },
   tabButtonActive: {
     backgroundColor: "#2563EB",
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
   tabText: {
     color: "#64748B",
     fontSize: 14,
-    fontFamily: "LatoBold",
+    fontFamily: "LatoRegular",
     fontWeight: "500",
   },
   tabTextActive: {
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   legendLabel: {
     fontSize: 16,
     color: "#667085",
-    fontFamily: "LatoRegular",
+    fontFamily: "LatoLight",
   },
   categoriesContainer: {
     paddingHorizontal: 20,

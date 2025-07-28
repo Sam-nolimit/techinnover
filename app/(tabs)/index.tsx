@@ -18,6 +18,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import Layout from "../../constants/Layout";
 import { RootState } from "../../store/store";
+import { formatDate } from "@/utils/Formatter";
 
 const getIconForCategory = (categoryKey: string) => {
   const iconMap: { [key: string]: JSX.Element } = {
@@ -44,14 +45,6 @@ const TransactionIcon = ({
 const HomeScreen = () => {
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-    });
-  };
 
   return (
     <Layout>
